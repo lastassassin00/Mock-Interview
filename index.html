@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PrepRoom – Mock Technical Interview</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--ink:#1c2033;--mute:#677089;--line:#e2e5ef;--acc:#4f46e5;--acc2:#eef0ff;--ok:#16a34a;--bad:#dc2626;--warn:#d97706;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1220;--card:#181c30;--ink:#eceefb;--mute:#9aa2c0;--line:#2a3050;--acc:#8b85ff;--acc2:#23284a;--ok:#4ade80;--bad:#f87171;--warn:#fbbf24;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1220;--card:#181c30;--ink:#eceefb;--mute:#9aa2c0;--line:#2a3050;--acc:#8b85ff;--acc2:#23284a;--ok:#4ade80;--bad:#f87171;--warn:#fbbf24;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;max-width:860px;margin:0 auto;padding:16px 20px}
+.logo{font-weight:800;font-size:20px;letter-spacing:-.3px}.logo span{color:var(--acc)}
+main{max-width:860px;margin:0 auto;padding:0 20px 48px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:16px}
+h1{font-size:clamp(28px,6vw,42px);line-height:1.15;margin:8px 0 12px;letter-spacing:-.8px}
+h2{margin:0 0 12px;font-size:20px}p{margin:0 0 12px;color:var(--mute)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 18px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:99px;cursor:pointer;font:inherit;font-size:14px}
+.chip.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn{background:var(--acc);color:#fff;border:0;border-radius:12px;padding:12px 22px;font:inherit;font-weight:600;cursor:pointer}
+.btn.ghost{background:var(--acc2);color:var(--acc)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:8px}
+.feat div{background:var(--acc2);border-radius:12px;padding:14px;font-size:14px}.feat b{display:block;margin-bottom:2px}
+.bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:14px;color:var(--mute)}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;font-size:22px;color:var(--ink)}.timer.low{color:var(--bad)}
+.prog{height:6px;background:var(--line);border-radius:9px;overflow:hidden;margin-bottom:18px}.prog i{display:block;height:100%;background:var(--acc);transition:width .3s}
+.tag{display:inline-block;background:var(--acc2);color:var(--acc);font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px}
+.q{font-size:20px;font-weight:600;margin:12px 0 14px;line-height:1.4}
+textarea{width:100%;min-height:130px;border:1px solid var(--line);border-radius:12px;padding:12px;font:inherit;background:var(--bg);color:var(--ink);resize:vertical}
+.ans{background:var(--acc2);border-radius:12px;padding:14px;margin:14px 0;font-size:15px}
+.rate button{width:auto;flex:1;min-width:90px}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+.big{font-size:56px;font-weight:800;letter-spacing:-2px;line-height:1}
+.hidden{display:none}.scroll{overflow-x:auto}
+</style>
+</head>
+<body>
+<header><div class="logo">Prep<span>Room</span></div><button class="chip" id="theme">Toggle theme</button></header>
+<main>
+
+<section id="home">
+  <div class="card">
+    <span class="tag">Placement season ready</span>
+    <h1>Practise technical interviews in 10–15 minutes.</h1>
+    <p>Pick your topics and session length. You’ll get timed, one-at-a-time questions like a real interviewer would ask. Type your answer, compare it with a model answer, and rate yourself.</p>
+    <div class="feat">
+      <div><b>⏱ Timed sessions</b>10 or 15 minute countdown</div>
+      <div><b>🎯 Topic choice</b>DSA, DBMS, OS, OOP, Networks</div>
+      <div><b>📊 Instant report</b>Score and weak areas</div>
+      <div><b>🗂 Progress history</b>Saved in your browser</div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>1. Choose topics</h2>
+    <div class="chips" id="topics"></div>
+    <h2>2. Session length</h2>
+    <div class="chips" id="lens"></div>
+    <button class="btn" id="start">Start interview</button>
+  </div>
+  <div class="card"><h2>Recent sessions</h2><div class="scroll" id="hist"></div></div>
+</section>
+
+<section id="session" class="hidden">
+  <div class="card">
+    <div class="bar"><span id="count"></span><span class="timer" id="timer">10:00</span></div>
+    <div class="prog"><i id="prog" style="width:0"></i></div>
+    <span class="tag" id="qtag"></span>
+    <div class="q" id="qtext"></div>
+    <textarea id="answer" placeholder="Speak it out loud, then type the key points here…"></textarea>
+    <div id="reveal" class="hidden">
+      <div class="ans"><b>Model answer</b><br><span id="model"></span></div>
+      <p>How well did you answer?</p>
+      <div class="row rate" id="rate"></div>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn" id="show">Show model answer</button>
+      <button class="btn ghost" id="skip">Skip</button>
+      <button class="btn ghost" id="end">End session</button>
+    </div>
+  </div>
+</section>
+
+<section id="result" class="hidden">
+  <div class="card">
+    <h2>Session report</h2>
+    <div class="row" style="gap:24px;margin-bottom:12px">
+      <div><div class="big" id="score">0%</div><p>overall score</p></div>
+      <div><p id="summary"></p><p id="verdict" style="color:var(--ink);font-weight:600"></p></div>
+    </div>
+    <div class="scroll"><table id="breakdown"></table></div>
+    <div class="row" style="margin-top:18px"><button class="btn" id="again">New session</button></div>
+  </div>
+</section>
+</main>
+
+<script>
+const BANK=[
+{t:"DSA",q:"Difference between an array and a linked list?",a:"Arrays use contiguous memory with O(1) index access but costly insert/delete in the middle. Linked lists use nodes with pointers: O(1) insert/delete given the node, O(n) access, extra memory for pointers."},
+{t:"DSA",q:"How would you detect a cycle in a linked list?",a:"Floyd’s tortoise and hare: move slow by 1 and fast by 2. If they meet there is a cycle. O(n) time, O(1) space."},
+{t:"DSA",q:"Explain the time complexity of quicksort.",a:"Average O(n log n), worst case O(n²) when pivots are poor (already sorted data with a bad pivot). Space O(log n). Random or median pivot avoids the worst case."},
+{t:"DSA",q:"Stack vs queue: where is each used?",a:"Stack is LIFO: function calls, undo, expression evaluation, DFS. Queue is FIFO: scheduling, BFS, buffering."},
+{t:"DSA",q:"How does a hash map handle collisions?",a:"Chaining (a list per bucket) or open addressing (linear/quadratic probing, double hashing). A good hash function and resizing at a load factor keep operations O(1) on average."},
+{t:"DBMS",q:"What are ACID properties?",a:"Atomicity (all or nothing), Consistency (valid state to valid state), Isolation (concurrent transactions don’t interfere), Durability (committed data survives crashes)."},
+{t:"DBMS",q:"Explain normalization and why it matters.",a:"Organising tables to reduce redundancy and anomalies. 1NF atomic values, 2NF no partial dependency, 3NF no transitive dependency, BCNF every determinant is a candidate key."},
+{t:"DBMS",q:"Difference between primary key and unique key?",a:"A primary key uniquely identifies rows, cannot be NULL, and there is only one per table. A unique key also enforces uniqueness but allows NULL (usually one) and a table can have many."},
+{t:"DBMS",q:"INNER JOIN vs LEFT JOIN?",a:"INNER JOIN returns only matching rows from both tables. LEFT JOIN returns all rows from the left table plus matches from the right, with NULLs where there is no match."},
+{t:"DBMS",q:"What is an index and what is its trade-off?",a:"A data structure (often a B+ tree) that speeds up lookups. Trade-off: extra storage and slower writes because the index must be updated."},
+{t:"OS",q:"Process vs thread?",a:"A process has its own address space and resources. Threads live inside a process and share memory and resources, so they’re lighter to create and switch but need synchronization."},
+{t:"OS",q:"What is a deadlock and its four necessary conditions?",a:"Processes wait forever on each other’s resources. Conditions: mutual exclusion, hold and wait, no preemption, circular wait. Break any one to prevent it."},
+{t:"OS",q:"Explain paging and virtual memory.",a:"Memory is split into fixed-size pages mapped to frames via a page table. Virtual memory lets processes use more memory than RAM by swapping pages to disk; a page fault loads a missing page."},
+{t:"OS",q:"Name common CPU scheduling algorithms.",a:"FCFS, SJF, Priority, Round Robin, Multilevel Queue. Round Robin uses a time quantum for fairness; SJF minimises average waiting time but can starve long jobs."},
+{t:"OS",q:"Mutex vs semaphore?",a:"A mutex is a lock owned by one thread for mutual exclusion. A semaphore is a counter allowing up to N concurrent accesses and can be signalled by a different thread."},
+{t:"OOP",q:"Explain the four pillars of OOP.",a:"Encapsulation (bundle data and methods, hide details), Abstraction (expose only essentials), Inheritance (reuse via parent classes), Polymorphism (one interface, many behaviours)."},
+{t:"OOP",q:"Overloading vs overriding?",a:"Overloading: same method name with different parameters in the same class, resolved at compile time. Overriding: a subclass redefines a parent method with the same signature, resolved at runtime."},
+{t:"OOP",q:"Abstract class vs interface?",a:"Abstract classes can hold state and partial implementations, with single inheritance. Interfaces define contracts that a class can implement many of, and mostly carry no state."},
+{t:"OOP",q:"What is the SOLID principle set?",a:"Single responsibility, Open/closed, Liskov substitution, Interface segregation, Dependency inversion. Together they make code maintainable and extensible."},
+{t:"OOP",q:"What is a constructor and can it be private?",a:"A constructor initialises a new object. Yes, a private constructor blocks outside instantiation; it’s used in singletons and static utility classes."},
+{t:"CN",q:"Explain the OSI model layers.",a:"Physical, Data Link, Network, Transport, Session, Presentation, Application. Each layer serves the one above and uses the one below."},
+{t:"CN",q:"TCP vs UDP?",a:"TCP is connection-oriented, reliable, ordered, with flow and congestion control. UDP is connectionless and faster but unreliable. Use TCP for web and email, UDP for streaming and DNS."},
+{t:"CN",q:"What happens when you type a URL in a browser?",a:"DNS resolves the domain to an IP, TCP connection (and TLS handshake for HTTPS), HTTP request sent, server responds, browser renders HTML, CSS and JS."},
+{t:"CN",q:"What is the difference between HTTP and HTTPS?",a:"HTTPS is HTTP over TLS, giving encryption, integrity, and server authentication via certificates, usually on port 443 instead of 80."},
+{t:"CN",q:"What is DNS?",a:"The Domain Name System translates human-readable domain names into IP addresses using a hierarchy of resolvers, root, TLD and authoritative servers, with caching."}
+];
+const TOPICS=["DSA","DBMS","OS","OOP","CN"],NAMES={DSA:"Data Structures",DBMS:"Databases",OS:"Operating Systems",OOP:"OOP",CN:"Networks"};
+const $=id=>document.getElementById(id);
+let sel=new Set(TOPICS),mins=10,S=null,tick=null,mem=[];
+function load(){try{return JSON.parse(localStorage.getItem("preproom")||"[]")}catch(e){return mem}}
+function save(r){const h=[r,...load()].slice(0,8);mem=h;try{localStorage.setItem("preproom",JSON.stringify(h))}catch(e){}}
+function show(id){["home","session","result"].forEach(s=>$(s).classList.toggle("hidden",s!==id));window.scrollTo(0,0)}
+function renderSetup(){
+  $("topics").innerHTML=TOPICS.map(t=>`<button class="chip ${sel.has(t)?"on":""}" data-t="${t}">${NAMES[t]}</button>`).join("");
+  $("lens").innerHTML=[10,15].map(m=>`<button class="chip ${mins===m?"on":""}" data-m="${m}">${m} minutes</button>`).join("");
+  $("start").disabled=!sel.size;
+  const h=load();
+  $("hist").innerHTML=h.length?`<table><tr><th>Date</th><th>Topics</th><th>Score</th><th>Answered</th></tr>${h.map(r=>`<tr><td>${r.d}</td><td>${r.t}</td><td>${r.s}%</td><td>${r.n}</td></tr>`).join("")}</table>`:"<p>No sessions yet. Your first one will show up here.</p>";
+}
+$("topics").onclick=e=>{const t=e.target.dataset.t;if(!t)return;sel.has(t)?sel.delete(t):sel.add(t);renderSetup()};
+$("lens").onclick=e=>{const m=e.target.dataset.m;if(!m)return;mins=+m;renderSetup()};
+$("theme").onclick=()=>{const r=document.documentElement,d=r.dataset.theme==="dark"||(!r.dataset.theme&&matchMedia("(prefers-color-scheme:dark)").matches);r.dataset.theme=d?"light":"dark"};
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+$("start").onclick=()=>{
+  const n=mins===10?7:10;
+  const qs=shuffle(BANK.filter(q=>sel.has(q.t))).slice(0,n);
+  S={qs,i:0,left:mins*60,total:mins*60,res:[]};
+  show("session");paint();clearInterval(tick);
+  tick=setInterval(()=>{S.left--;clock();if(S.left<=0)finish()},1000);
+};
+function clock(){const m=Math.floor(S.left/60),s=S.left%60;$("timer").textContent=`${m}:${String(s).padStart(2,"0")}`;$("timer").classList.toggle("low",S.left<=60)}
+function paint(){
+  const q=S.qs[S.i];
+  $("count").textContent=`Question ${S.i+1} of ${S.qs.length}`;
+  $("prog").style.width=(S.i/S.qs.length*100)+"%";
+  $("qtag").textContent=NAMES[q.t];$("qtext").textContent=q.q;
+  $("answer").value="";$("model").textContent=q.a;
+  $("reveal").classList.add("hidden");$("show").classList.remove("hidden");
+  $("rate").innerHTML=[["Missed it",0],["Partly",50],["Good",80],["Nailed it",100]].map(([l,v])=>`<button class="btn ghost" data-v="${v}">${l}</button>`).join("");
+  clock();
+}
+$("show").onclick=()=>{$("reveal").classList.remove("hidden");$("show").classList.add("hidden")};
+$("rate").onclick=e=>{const v=e.target.dataset.v;if(v===undefined)return;next(+v)};
+$("skip").onclick=()=>next(null);
+$("end").onclick=finish;
+function next(v){
+  S.res.push({t:S.qs[S.i].t,v});S.i++;
+  S.i>=S.qs.length?finish():paint();
+}
+function finish(){
+  if(!S)return;clearInterval(tick);
+  const done=S.res.filter(r=>r.v!==null);
+  const score=done.length?Math.round(done.reduce((a,r)=>a+r.v,0)/done.length):0;
+  const by={};done.forEach(r=>{(by[r.t]=by[r.t]||[]).push(r.v)});
+  const rows=Object.keys(by).map(t=>({t,s:Math.round(by[t].reduce((a,b)=>a+b,0)/by[t].length),n:by[t].length}));
+  const used=S.total-Math.max(S.left,0);
+  $("score").textContent=score+"%";
+  $("summary").textContent=`${done.length} answered, ${S.res.length-done.length} skipped, ${Math.floor(used/60)}m ${used%60}s used.`;
+  $("verdict").textContent=!done.length?"No answers rated. Try a full session next time.":score>=75?"Strong performance. You’re interview ready on these topics.":score>=45?"Decent base. Revise the weak topics below and retry.":"Needs more practice. Review the model answers and try again.";
+  $("breakdown").innerHTML=rows.length?`<tr><th>Topic</th><th>Questions</th><th>Score</th></tr>`+rows.sort((a,b)=>a.s-b.s).map(r=>`<tr><td>${NAMES[r.t]}</td><td>${r.n}</td><td style="color:${r.s>=75?"var(--ok)":r.s>=45?"var(--warn)":"var(--bad)"};font-weight:700">${r.s}%</td></tr>`).join(""):"";
+  if(done.length)save({d:new Date().toLocaleDateString("en-IN",{day:"numeric",month:"short"}),t:[...sel].join(", "),s:score,n:done.length});
+  S=null;show("result");
+}
+$("again").onclick=()=>{renderSetup();show("home")};
+renderSetup();
+</script>
+</body>
+</html>
